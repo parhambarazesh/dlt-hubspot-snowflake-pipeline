@@ -152,7 +152,7 @@ def load_web_analytics_events(
     print(info)
 
 
-def load_one_crm_data(datatype) -> None:
+def load_selected_crm_data(datatype) -> None:
     p = dlt.pipeline(
         pipeline_name="hubspot",
         dataset_name="hubspot_dataset",
@@ -166,8 +166,8 @@ def load_one_crm_data(datatype) -> None:
 
 
 if __name__ == "__main__":
-    load_one_crm_data(["contacts", "companies"])
-    # load_crm_data()
+    # load_selected_crm_data(["contacts", "companies"])
+    load_crm_data()
     # load_crm_data_with_history()
     # load_crm_objects_with_custom_properties()
     # load_pipelines()
