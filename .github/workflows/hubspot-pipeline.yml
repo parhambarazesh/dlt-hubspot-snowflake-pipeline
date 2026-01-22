@@ -13,7 +13,7 @@ jobs:
   run-pipeline:
     runs-on: ubuntu-latest
     env:
-      HUBSPOT_ACCESS_TOKEN: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
+      HUBSPOT__SOURCES__HUBSPOT__API_KEY: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
       DESTINATION__SNOWFLAKE__ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
       DESTINATION__SNOWFLAKE__USER: ${{ secrets.SNOWFLAKE_USER }}
       DESTINATION__SNOWFLAKE__PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
