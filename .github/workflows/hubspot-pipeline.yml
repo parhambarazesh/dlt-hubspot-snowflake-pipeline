@@ -34,12 +34,16 @@ jobs:
           [ destination.snowflake.credentials ]
           database = "${{ secrets.SNOWFLAKE_DATABASE }}"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-          username = "${{ secrets.SNOWFLAKE_USER }}"  # <-- must be 'username'
+          username = "${{ secrets.SNOWFLAKE_USER }}"
           host = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
           warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
           role = "${{ secrets.SNOWFLAKE_ROLE }}"
           EOF
-      
+      - name: Check secrets.toml exists
+        run: |
+          ls -l ~/.dlt
+          head -n 5 ~/.dlt/secrets.toml  # shows structure without sensitive values
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
