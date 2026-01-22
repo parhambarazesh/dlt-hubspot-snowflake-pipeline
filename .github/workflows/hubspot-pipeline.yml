@@ -36,11 +36,12 @@ jobs:
           echo "database = \"${{ secrets.SNOWFLAKE_DATABASE }}\"" >> ~/.dlt/secrets.toml
           echo "warehouse = \"${{ secrets.SNOWFLAKE_WAREHOUSE }}\"" >> ~/.dlt/secrets.toml
           echo "role = \"${{ secrets.SNOWFLAKE_ROLE }}\"" >> ~/.dlt/secrets.toml
+      
 
       - name: Check secrets.toml exists
         run: |
           ls -l ~/.dlt
-          head -n 5 ~/.dlt/secrets.toml  # shows structure without sensitive values
+          head -n 5 ~/.dlt/secrets.toml
 
       - name: Checkout repository
         uses: actions/checkout@v4
