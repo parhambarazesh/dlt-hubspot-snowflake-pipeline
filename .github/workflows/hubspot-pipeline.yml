@@ -28,17 +28,17 @@ jobs:
           mkdir -p ~/.dlt
 
           cat <<EOF > ~/.dlt/secrets.toml
-      [ sources.hubspot ]
-      api_key = "${{ secrets.HUBSPOT_ACCESS_TOKEN }}"
-
-      [ destination.snowflake.credentials ]
-      database = "${{ secrets.SNOWFLAKE_DATABASE }}"
-      password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-      user = "${{ secrets.SNOWFLAKE_USER }}"
-      host = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
-      warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
-      role = "${{ secrets.SNOWFLAKE_ROLE }}"
-      EOF
+          [ sources.hubspot ]
+          api_key = "${{ secrets.HUBSPOT_ACCESS_TOKEN }}"
+    
+          [ destination.snowflake.credentials ]
+          database = "${{ secrets.SNOWFLAKE_DATABASE }}"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          user = "${{ secrets.SNOWFLAKE_USER }}"
+          host = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
+          role = "${{ secrets.SNOWFLAKE_ROLE }}"
+          EOF
       
       
       
