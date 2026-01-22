@@ -26,19 +26,17 @@ jobs:
       - name: Prepare DLT secrets
         run: |
           mkdir -p ~/.dlt
+          echo "[sources.hubspot]" > ~/.dlt/secrets.toml
+          echo "api_key = \"${{ secrets.HUBSPOT_ACCESS_TOKEN }}\"" >> ~/.dlt/secrets.toml
 
-          cat <<EOF > ~/.dlt/secrets.toml
-          [ sources.hubspot ]
-          api_key = "${{ secrets.HUBSPOT_ACCESS_TOKEN }}"
-    
-          [ destination.snowflake.credentials ]
-          database = "${{ secrets.SNOWFLAKE_DATABASE }}"
-          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-          username = "${{ secrets.SNOWFLAKE_USER }}"
-          host = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
-          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
-          role = "${{ secrets.SNOWFLAKE_ROLE }}"
-          EOF
+          echo "[destination.snowflake.credentials]" >> ~/.dlt/secrets.toml
+          echo "username = \"${{ secrets.SNOWFLAKE_USER }}\"" >> ~/.dlt/secrets.toml
+          echo "password = \"${{ secrets.SNOWFLAKE_PASSWORD }}\"" >> ~/.dlt/secrets.toml
+          echo "host = \"${{ secrets.SNOWFLAKE_ACCOUNT }}\"" >> ~/.dlt/secrets.toml
+          echo "database = \"${{ secrets.SNOWFLAKE_DATABASE }}\"" >> ~/.dlt/secrets.toml
+          echo "warehouse = \"${{ secrets.SNOWFLAKE_WAREHOUSE }}\"" >> ~/.dlt/secrets.toml
+          echo "role = \"${{ secrets.SNOWFLAKE_ROLE }}\"" >> ~/.dlt/secrets.toml
+
       - name: Check secrets.toml exists
         run: |
           ls -l ~/.dlt
