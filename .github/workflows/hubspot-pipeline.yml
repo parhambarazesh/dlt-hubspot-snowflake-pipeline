@@ -23,17 +23,24 @@ jobs:
       DESTINATION__SNOWFLAKE__SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
 
     steps:
-      - name: Set up Git repository
+      - name: Prepare DLT secrets
         run: |
           mkdir -p ~/.dlt
+
+          # Hubspot
           echo "[sources.hubspot.hubspot]" > ~/.dlt/secrets.toml
-          echo "api_key = '${{ secrets.API_KEY }}'" >> ~/.dlt/secrets.toml
-          echo "[destinations.snowflake]" >> ~/.dlt/secrets.toml
-          echo "database = '${{ secrets.SNOWFLAKE_DATABASE }}'" >> ~/.dlt/secrets.toml
+          echo "api_key = '${{ secrets.HUBSPOT_ACCESS_TOKEN }}'" >> ~/.dlt/secrets.toml
+
+          # Snowflake destination
+          echo "[destinations.snowflake.credentials]" >> ~/.dlt/secrets.toml
+          echo "host = '${{ secrets.SNOWFLAKE_ACCOUNT }}'" >> ~/.dlt/secrets.toml
+          echo "user = '${{ secrets.SNOWFLAKE_USER }}'" >> ~/.dlt/secrets.toml
           echo "password = '${{ secrets.SNOWFLAKE_PASSWORD }}'" >> ~/.dlt/secrets.toml
           echo "role = '${{ secrets.SNOWFLAKE_ROLE }}'" >> ~/.dlt/secrets.toml
-          echo "schema = '${{ secrets.SNOWFLAKE_SCHEMA }}'" >> ~/.dlt/secrets.toml
           echo "warehouse = '${{ secrets.SNOWFLAKE_WAREHOUSE }}'" >> ~/.dlt/secrets.toml
+          echo "database = '${{ secrets.SNOWFLAKE_DATABASE }}'" >> ~/.dlt/secrets.toml
+          echo "schema = '${{ secrets.SNOWFLAKE_SCHEMA }}'" >> ~/.dlt/secrets.toml
+      
 
       - name: Checkout repository
         uses: actions/checkout@v4
