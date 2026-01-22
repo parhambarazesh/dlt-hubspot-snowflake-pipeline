@@ -23,6 +23,12 @@ jobs:
       DESTINATION__SNOWFLAKE__SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
 
     steps:
+      - name: Check secrets
+        run: |
+          echo "SNOWFLAKE_USER secret exists? ${#SNOWFLAKE_USER} chars"
+        env:
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+
       - name: Prepare DLT secrets
         run: |
           mkdir -p ~/.dlt
