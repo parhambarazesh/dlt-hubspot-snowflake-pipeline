@@ -30,19 +30,29 @@ jobs:
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
 
       - name: Prepare DLT secrets
+        env:
+          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
+          SNOWFLAKE_USERNAME: ${{ secrets.SNOWFLAKE_USERNAME }}
+          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
         run: |
           mkdir -p ~/.dlt
-          echo "[sources.hubspot]" > ~/.dlt/secrets.toml
-          echo "api_key = \"${{ secrets.HUBSPOT_ACCESS_TOKEN }}\"" >> ~/.dlt/secrets.toml
 
-          echo "[destination.snowflake.credentials]" >> ~/.dlt/secrets.toml
-          echo "username = \"PARHAMBRZ120"\" >> ~/.dlt/secrets.toml
-          echo "password = \"${{ secrets.SNOWFLAKE_PASSWORD }}\"" >> ~/.dlt/secrets.toml
-          echo "host = \"AWPNNIH-KKB41012\"" >> ~/.dlt/secrets.toml
-          echo "database = \"DEMO_DB\"" >> ~/.dlt/secrets.toml
-          echo "warehouse = \"COMPUTE_WH\"" >> ~/.dlt/secrets.toml
-          echo "role = \"ACCOUNTADMIN\"" >> ~/.dlt/secrets.toml
-      
+          cat > ~/.dlt/secrets.toml <<'EOF'
+          [sources.hubspot]
+          api_key = "${HUBSPOT_API_KEY}"
+
+          [destination.snowflake.credentials]
+          username = "${SNOWFLAKE_USERNAME}"
+          password = "${SNOWFLAKE_PASSWORD}"
+          host = "${SNOWFLAKE_HOST}"
+          database = "${SNOWFLAKE_DATABASE}"
+          warehouse = "${SNOWFLAKE_WAREHOUSE}"
+          role = "${SNOWFLAKE_ROLE}"
+          EOF
 
       - name: Check secrets.toml exists
         run: |
