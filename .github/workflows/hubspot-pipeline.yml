@@ -42,7 +42,7 @@ jobs:
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           host = "${SNOWFLAKE_HOST}"
           database = "${SNOWFLAKE_DATABASE}"
-          warehouse = "${SNOWFLAKE_WAREHOUSE}"
+          warehouse = "${{ env.SNOWFLAKE_PASSWORD }}"
           role = "${SNOWFLAKE_ROLE}"
           EOF
 
