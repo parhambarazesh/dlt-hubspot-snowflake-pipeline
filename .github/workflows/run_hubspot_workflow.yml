@@ -42,5 +42,10 @@ jobs:
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
     - run: pip install -r requirements.txt
       if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
+    - name: Check secrets.toml exists
+      run: |
+        ls -l ~/.dlt
+        head -n 15 ~/.dlt/secrets.toml
     - name: Run pipeline script
       run: python 'hubspot_pipeline.py'
