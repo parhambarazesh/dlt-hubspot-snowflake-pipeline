@@ -45,6 +45,8 @@ jobs:
           warehouse = "${SNOWFLAKE_WAREHOUSE}"
           role = "${SNOWFLAKE_ROLE}"
           EOF
+        env:
+          SNOWFLAKE_WAREHOUSE: TEST
 
       - name: Check secrets.toml exists
         run: |
