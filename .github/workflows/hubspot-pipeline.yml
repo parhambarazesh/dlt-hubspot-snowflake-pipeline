@@ -36,12 +36,12 @@ jobs:
           echo "api_key = \"${{ secrets.HUBSPOT_ACCESS_TOKEN }}\"" >> ~/.dlt/secrets.toml
 
           echo "[destination.snowflake.credentials]" >> ~/.dlt/secrets.toml
-          echo "username = PARHAMBRZ120" >> ~/.dlt/secrets.toml
+          echo "username = \"PARHAMBRZ120"\" >> ~/.dlt/secrets.toml
           echo "password = \"${{ secrets.SNOWFLAKE_PASSWORD }}\"" >> ~/.dlt/secrets.toml
-          echo "host = AWPNNIH-KKB41012" >> ~/.dlt/secrets.toml
-          echo "database = DEMO_DB" >> ~/.dlt/secrets.toml
-          echo "warehouse = COMPUTE_WH" >> ~/.dlt/secrets.toml
-          echo "role = ACCOUNTADMIN" >> ~/.dlt/secrets.toml
+          echo "host = \"AWPNNIH-KKB41012\"" >> ~/.dlt/secrets.toml
+          echo "database = \"DEMO_DB\"" >> ~/.dlt/secrets.toml
+          echo "warehouse = \"COMPUTE_WH\"" >> ~/.dlt/secrets.toml
+          echo "role = \"ACCOUNTADMIN\"" >> ~/.dlt/secrets.toml
       
 
       - name: Check secrets.toml exists
