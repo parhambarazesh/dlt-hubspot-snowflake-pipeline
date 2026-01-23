@@ -30,14 +30,6 @@ jobs:
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
 
       - name: Prepare DLT secrets
-        env:
-          HUBSPOT_API_KEY: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
-          SNOWFLAKE_USERNAME: ${{ secrets.SNOWFLAKE_USERNAME }}
-          SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-          SNOWFLAKE_HOST: ${{ secrets.SNOWFLAKE_HOST }}
-          SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
         run: |
           mkdir -p ~/.dlt
 
@@ -47,7 +39,7 @@ jobs:
 
           [destination.snowflake.credentials]
           username = "${SNOWFLAKE_USERNAME}"
-          password = "${SNOWFLAKE_PASSWORD}"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           host = "${SNOWFLAKE_HOST}"
           database = "${SNOWFLAKE_DATABASE}"
           warehouse = "${SNOWFLAKE_WAREHOUSE}"
