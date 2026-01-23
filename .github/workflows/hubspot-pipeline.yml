@@ -47,7 +47,7 @@ jobs:
       - name: Check secrets.toml exists
         run: |
           ls -l ~/.dlt
-          head -n 5 ~/.dlt/secrets.toml
+          head -n 15 ~/.dlt/secrets.toml
 
       - name: Checkout repository
         uses: actions/checkout@v4
