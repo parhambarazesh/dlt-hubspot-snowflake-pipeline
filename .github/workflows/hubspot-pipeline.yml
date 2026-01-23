@@ -35,15 +35,15 @@ jobs:
 
           cat > ~/.dlt/secrets.toml <<'EOF'
           [sources.hubspot]
-          api_key = "${HUBSPOT_API_KEY}"
+          api_key = "${{ secrets.HUBSPOT_ACCESS_TOKEN }}"
 
           [destination.snowflake.credentials]
-          username = "${SNOWFLAKE_USERNAME}"
+          username = "${{ vars.SNOWFLAKE_USERNAME }}"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-          host = "${SNOWFLAKE_HOST}"
-          database = "${SNOWFLAKE_DATABASE}"
+          host = "${{ vars.SNOWFLAKE_HOST }}"
+          database = "${{ vars.SNOWFLAKE_DATABASE }}"
           warehouse = "${{ vars.SNOWFLAKE_WAREHOUSE }}"
-          role = "${SNOWFLAKE_ROLE}"
+          role = "${{ vars.SNOWFLAKE_ROLE }}"
           EOF
         env:
           SNOWFLAKE_WAREHOUSE: TEST
