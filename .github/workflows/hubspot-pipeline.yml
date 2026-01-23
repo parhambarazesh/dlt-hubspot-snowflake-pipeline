@@ -1,67 +1,66 @@
-# OBSOLETE: Use the new DLT GitHub Action instead:
-#name: HubSpot DLT Pipeline
-#
-#on:
-##  schedule:
-##    - cron: '*/5 * * * *'
-#  workflow_dispatch:
-#
-#concurrency:
-#  group: hubspot-pipeline
-#  cancel-in-progress: true
-#
-#jobs:
-#  run-pipeline:
-#    runs-on: ubuntu-latest
-##    env:
-##      HUBSPOT__SOURCES__HUBSPOT__API_KEY: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
-##      DESTINATION__SNOWFLAKE__ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-##      DESTINATION__SNOWFLAKE__USER: PARHAMBRZ120
-##      DESTINATION__SNOWFLAKE__PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
-##      DESTINATION__SNOWFLAKE__ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-##      DESTINATION__SNOWFLAKE__WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-##      DESTINATION__SNOWFLAKE__DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
-##      DESTINATION__SNOWFLAKE__SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
-#
-#    steps:
-#      - name: Check secrets
-#        run: |
-#          echo "SNOWFLAKE_USER secret exists? ${#SNOWFLAKE_USER} chars"
-#        env:
-#          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-#
-#      - name: Prepare DLT secrets
-#        run: |
-#          mkdir -p ~/.dlt
-#          echo "[sources.hubspot]" > ~/.dlt/secrets.toml
-#          echo "api_key = \"${{ secrets.HUBSPOT_ACCESS_TOKEN }}\"" >> ~/.dlt/secrets.toml
-#
-#          echo "[destination.snowflake.credentials]" >> ~/.dlt/secrets.toml
-#          echo "username = \"PARHAMBRZ120"\" >> ~/.dlt/secrets.toml
-#          echo "password = \"${{ secrets.SNOWFLAKE_PASSWORD }}\"" >> ~/.dlt/secrets.toml
-#          echo "host = \"AWPNNIH-KKB41012\"" >> ~/.dlt/secrets.toml
-#          echo "database = \"DEMO_DB\"" >> ~/.dlt/secrets.toml
-#          echo "warehouse = \"COMPUTE_WH\"" >> ~/.dlt/secrets.toml
-#          echo "role = \"ACCOUNTADMIN\"" >> ~/.dlt/secrets.toml
-#
-#
-#      - name: Check secrets.toml exists
-#        run: |
-#          ls -l ~/.dlt
-#          head -n 15 ~/.dlt/secrets.toml
-#
-#      - name: Checkout repository
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Python 3.11
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: '3.11'
-#
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install --no-cache-dir -r requirements.txt
-#
-#      - name: Run HubSpot pipeline
-#        run: python -u hubspot_pipeline.py
+name: HubSpot DLT Pipeline
+
+on:
+#  schedule:
+#    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: hubspot-pipeline
+  cancel-in-progress: true
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+#    env:
+#      HUBSPOT__SOURCES__HUBSPOT__API_KEY: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
+#      DESTINATION__SNOWFLAKE__ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+#      DESTINATION__SNOWFLAKE__USER: PARHAMBRZ120
+#      DESTINATION__SNOWFLAKE__PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+#      DESTINATION__SNOWFLAKE__ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+#      DESTINATION__SNOWFLAKE__WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+#      DESTINATION__SNOWFLAKE__DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+#      DESTINATION__SNOWFLAKE__SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+
+    steps:
+      - name: Check secrets
+        run: |
+          echo "SNOWFLAKE_USER secret exists? ${#SNOWFLAKE_USER} chars"
+        env:
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+
+      - name: Prepare DLT secrets
+        run: |
+          mkdir -p ~/.dlt
+          echo "[sources.hubspot]" > ~/.dlt/secrets.toml
+          echo "api_key = \"${{ secrets.HUBSPOT_ACCESS_TOKEN }}\"" >> ~/.dlt/secrets.toml
+
+          echo "[destination.snowflake.credentials]" >> ~/.dlt/secrets.toml
+          echo "username = \"PARHAMBRZ120"\" >> ~/.dlt/secrets.toml
+          echo "password = \"${{ secrets.SNOWFLAKE_PASSWORD }}\"" >> ~/.dlt/secrets.toml
+          echo "host = \"AWPNNIH-KKB41012\"" >> ~/.dlt/secrets.toml
+          echo "database = \"DEMO_DB\"" >> ~/.dlt/secrets.toml
+          echo "warehouse = \"COMPUTE_WH\"" >> ~/.dlt/secrets.toml
+          echo "role = \"ACCOUNTADMIN\"" >> ~/.dlt/secrets.toml
+      
+
+      - name: Check secrets.toml exists
+        run: |
+          ls -l ~/.dlt
+          head -n 15 ~/.dlt/secrets.toml
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Run HubSpot pipeline
+        run: python -u hubspot_pipeline.py
