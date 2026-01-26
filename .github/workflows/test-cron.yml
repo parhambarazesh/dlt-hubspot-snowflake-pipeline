@@ -1,0 +1,15 @@
+# write a test workflow that runs every 5 minutes with no output
+name: Test Cron Workflow
+'on':
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: null
+concurrency:
+    group: test-cron-workflow
+    cancel-in-progress: true
+jobs:
+    test-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: No-op step
+              run: echo "This is a test cron workflow running every 5 minutes."
