@@ -1,9 +1,9 @@
 name: HubSpot DLT Pipeline
 
-on:
+'on':
   schedule:
     - cron: '*/15 * * * *'
-  workflow_dispatch:
+  workflow_dispatch: null
 
 concurrency:
   group: hubspot-pipeline
