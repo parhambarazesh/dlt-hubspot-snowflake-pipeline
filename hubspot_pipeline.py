@@ -22,7 +22,7 @@ def load_crm_data() -> None:
     )
 
     # Run the pipeline with the HubSpot source connector
-    info = p.run(hubspot())
+    info = p.run(hubspot(), write_disposition="append")
 
     # Print information about the pipeline run
     print(info)
