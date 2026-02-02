@@ -1,8 +1,9 @@
 name: HubSpot DLT Pipeline
 
 'on':
-  schedule:
-    - cron: '*/15 * * * *'
+  # Uncomment the following lines to enable scheduled runs
+#  schedule:
+#    - cron: '*/15 * * * *'
   workflow_dispatch: null
 
 concurrency:
