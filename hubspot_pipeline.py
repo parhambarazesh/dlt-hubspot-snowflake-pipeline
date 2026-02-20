@@ -76,7 +76,7 @@ def load_crm_data_with_soft_delete() -> None:
     data = hubspot(soft_delete=True)
 
     # Run the pipeline with the HubSpot source connector.
-    info = p.run(data)
+    info = p.run(data, write_disposition="merge", full_refresh=False,primary_key="hs_object_id")
 
     # Print information about the pipeline run.
     print(info)
@@ -166,8 +166,8 @@ def load_selected_crm_data(datatype) -> None:
 
 
 if __name__ == "__main__":
-    # load_selected_crm_data(["contacts", "companies"])
-    load_crm_data()
+    load_selected_crm_data(["contacts", "companies"])
+    # load_crm_data()
     # load_crm_data_with_history()
     # load_crm_objects_with_custom_properties()
     # load_pipelines()
