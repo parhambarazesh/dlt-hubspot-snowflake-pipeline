@@ -161,7 +161,7 @@ def load_selected_crm_data(datatype) -> None:
 
     data = hubspot().with_resources(*datatype)
 
-    info = p.run(data)
+    info = p.run(data, write_disposition="merge")
     print(info)
 
 
