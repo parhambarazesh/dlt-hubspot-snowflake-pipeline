@@ -62,6 +62,7 @@ from .settings import (
     STARTDATE,
     WEB_ANALYTICS_EVENTS_ENDPOINT,
     HS_TO_DLT_TYPE,
+    OBJECT_INCREMENTAL_CURSOR,
 )
 from .utils import chunk_properties
 
@@ -111,6 +112,7 @@ def crm_objects(
     props: List[str],
     include_custom_props: bool = True,
     archived: bool = False,
+    modified_at: Optional[dlt.sources.incremental[str]] = None,
 ) -> Iterator[TDataItems]:
     """
     Fetch CRM object data (e.g., companies, contacts) from the HubSpot API.
@@ -135,8 +137,14 @@ def crm_objects(
         prop: _to_dlt_columns_schema({prop: hb_type})
         for prop, hb_type in props_to_type.items()
     }
+    props_to_fetch = list(props_to_type.keys())
+    if modified_at:
+        cursor_field = OBJECT_INCREMENTAL_CURSOR[object_type]
+        if cursor_field not in props_to_fetch:
+            props_to_fetch.append(cursor_field)
+
     for batch in fetch_data_for_properties(
-        list(props_to_type.keys()), api_key, object_type, archived
+        props_to_fetch, api_key, object_type, archived
     ):
         yield dlt.mark.with_hints(batch, dlt.mark.make_hints(columns=col_type_hints))
 
@@ -402,6 +410,7 @@ def hubspot(
 
     # resources for all objects
     for obj in ALL_OBJECTS:
+        cursor_field = OBJECT_INCREMENTAL_CURSOR[obj]
         yield dlt.resource(
             crm_objects,
             name=OBJECT_TYPE_PLURAL[obj],
@@ -413,6 +422,10 @@ def hubspot(
             props=properties.get(obj),
             include_custom_props=include_custom_props,
             archived=soft_delete,
+            modified_at=dlt.sources.incremental(
+                cursor_field,
+                initial_value=STARTDATE.isoformat(),
+            ),
         )
 
     # corresponding history resources

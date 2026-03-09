@@ -112,6 +112,16 @@ ENTITY_PROPERTIES = {
     "quote": DEFAULT_QUOTE_PROPS,
 }
 
+# HubSpot cursor field differs by CRM object type.
+OBJECT_INCREMENTAL_CURSOR = {
+    "company": "hs_lastmodifieddate",
+    "contact": "lastmodifieddate",
+    "deal": "hs_lastmodifieddate",
+    "ticket": "hs_lastmodifieddate",
+    "product": "hs_lastmodifieddate",
+    "quote": "hs_lastmodifieddate",
+}
+
 
 PIPELINES_OBJECTS = ["deals", "tickets"]
 SOFT_DELETE_KEY = "is_deleted"
