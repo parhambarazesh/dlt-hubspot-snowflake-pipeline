@@ -43,6 +43,7 @@ from .helpers import (
     _get_property_names_types,
     _to_dlt_columns_schema,
     fetch_data,
+    fetch_data_incremental,
     fetch_property_history,
     get_properties_labels,
 )
@@ -62,6 +63,7 @@ from .settings import (
     STARTDATE,
     WEB_ANALYTICS_EVENTS_ENDPOINT,
     HS_TO_DLT_TYPE,
+    OBJECT_INCREMENTAL_CURSOR,
 )
 from .utils import chunk_properties
 
@@ -73,6 +75,7 @@ def fetch_data_for_properties(
     api_key: str,
     object_type: str,
     soft_delete: bool,
+    modified_after: Optional[str] = None,
 ) -> Iterator[TDataItems]:
     """
     Fetch data for a given set of properties from the HubSpot API.
@@ -89,6 +92,18 @@ def fetch_data_for_properties(
     # The Hubspot API expects a comma separated string as properties
     joined_props = ",".join(sorted(props))
     params: Dict[str, Any] = {"properties": joined_props, "limit": 100}
+
+    # Use server-side filtering when possible so only changed/new records are fetched.
+    if modified_after is not None and not soft_delete:
+        yield from fetch_data_incremental(
+            object_type=object_type,
+            api_key=api_key,
+            props=joined_props,
+            cursor_field=OBJECT_INCREMENTAL_CURSOR[object_type],
+            modified_after=modified_after,
+        )
+        return
+
     context: Optional[Dict[str, Any]] = (
         {SOFT_DELETE_KEY: False} if soft_delete else None
     )
@@ -111,6 +126,7 @@ def crm_objects(
     props: List[str],
     include_custom_props: bool = True,
     archived: bool = False,
+    modified_at: Optional[dlt.sources.incremental[str]] = None,
 ) -> Iterator[TDataItems]:
     """
     Fetch CRM object data (e.g., companies, contacts) from the HubSpot API.
@@ -136,7 +152,11 @@ def crm_objects(
         for prop, hb_type in props_to_type.items()
     }
     for batch in fetch_data_for_properties(
-        list(props_to_type.keys()), api_key, object_type, archived
+        list(props_to_type.keys()),
+        api_key,
+        object_type,
+        archived,
+        modified_after=modified_at.last_value if modified_at else None,
     ):
         yield dlt.mark.with_hints(batch, dlt.mark.make_hints(columns=col_type_hints))
 
@@ -402,6 +422,7 @@ def hubspot(
 
     # resources for all objects
     for obj in ALL_OBJECTS:
+        cursor_field = OBJECT_INCREMENTAL_CURSOR[obj]
         yield dlt.resource(
             crm_objects,
             name=OBJECT_TYPE_PLURAL[obj],
@@ -413,6 +434,10 @@ def hubspot(
             props=properties.get(obj),
             include_custom_props=include_custom_props,
             archived=soft_delete,
+            modified_at=dlt.sources.incremental(
+                cursor_field,
+                initial_value=STARTDATE.isoformat(),
+            ),
         )
 
     # corresponding history resources

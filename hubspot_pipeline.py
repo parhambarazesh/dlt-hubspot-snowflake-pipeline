@@ -1,8 +1,64 @@
-from typing import List
+import gzip
+from collections import defaultdict
+from typing import Any, Dict, List
 
 import dlt
 
 from hubspot import hubspot, hubspot_events_for_objects, THubspotObjectType
+
+
+def _count_jsonl_rows(file_path: str, is_compressed: bool) -> int:
+    """Count rows in a dlt job data file (jsonl/jsonl.gz)."""
+    line_count = 0
+    open_fn = gzip.open if is_compressed else open
+    with open_fn(file_path, "rt", encoding="utf-8") as f:
+        for _ in f:
+            line_count += 1
+    return line_count
+
+
+def _log_rows_sent_to_snowflake(pipeline: dlt.Pipeline, load_info: Any) -> None:
+    """Print per-table row counts for the current run's load packages."""
+    info_dict = load_info.asdict() if hasattr(load_info, "asdict") else {}
+    load_ids = info_dict.get("loads_ids", [])
+    if not load_ids:
+        print("[ROW LOG] No load packages created. Rows sent to Snowflake: 0")
+        return
+
+    rows_by_table: Dict[str, int] = defaultdict(int)
+    total_rows = 0
+
+    for load_id in load_ids:
+        package_info = pipeline.get_load_package_info(load_id).asdict()
+        for job in package_info.get("jobs", []):
+            table_name = job.get("table_name")
+            if not table_name or table_name.startswith("_dlt"):
+                continue
+            if job.get("file_format") != "jsonl":
+                continue
+
+            file_path = job.get("file_path")
+            if not file_path:
+                continue
+
+            try:
+                row_count = _count_jsonl_rows(
+                    file_path=file_path,
+                    is_compressed=bool(job.get("is_compressed")),
+                )
+            except OSError as ex:
+                print(f"[ROW LOG] Could not read job file for {table_name}: {ex}")
+                continue
+
+            rows_by_table[table_name] += row_count
+            total_rows += row_count
+
+    print(f"[ROW LOG] Total rows sent to Snowflake in this run: {total_rows}")
+    if rows_by_table:
+        for table_name, row_count in sorted(rows_by_table.items()):
+            print(f"[ROW LOG] {table_name}: {row_count}")
+    else:
+        print("[ROW LOG] No table data files detected for this run.")
 
 
 def load_crm_data() -> None:
@@ -26,6 +82,7 @@ def load_crm_data() -> None:
 
     # Print information about the pipeline run
     print(info)
+    _log_rows_sent_to_snowflake(p, info)
 
 
 def load_crm_data_with_history() -> None:
@@ -53,6 +110,7 @@ def load_crm_data_with_history() -> None:
 
     # Print information about the pipeline run
     print(info)
+    _log_rows_sent_to_snowflake(p, info)
 
 
 def load_crm_data_with_soft_delete() -> None:
@@ -80,6 +138,7 @@ def load_crm_data_with_soft_delete() -> None:
 
     # Print information about the pipeline run.
     print(info)
+    _log_rows_sent_to_snowflake(p, info)
 
 
 def load_crm_objects_with_custom_properties() -> None:
@@ -102,6 +161,7 @@ def load_crm_objects_with_custom_properties() -> None:
     )
     load_info = pipeline.run(load_data)
     print(load_info)
+    _log_rows_sent_to_snowflake(pipeline, load_info)
 
 
 def load_pipelines() -> None:
@@ -123,6 +183,7 @@ def load_pipelines() -> None:
     load_data = hubspot().with_resources("pipelines_deals", "stages_timing_deals")
     load_info = p.run(load_data)
     print(load_info)
+    _log_rows_sent_to_snowflake(p, load_info)
 
 
 def load_web_analytics_events(
@@ -150,6 +211,7 @@ def load_web_analytics_events(
 
     # Print information about the pipeline run
     print(info)
+    _log_rows_sent_to_snowflake(p, info)
 
 
 def load_selected_crm_data(datatype) -> None:
@@ -163,6 +225,7 @@ def load_selected_crm_data(datatype) -> None:
 
     info = p.run(data, write_disposition="merge")
     print(info)
+    _log_rows_sent_to_snowflake(p, info)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ from typing import Union
 import urllib.parse
 from typing import Any, Dict, Iterator, List, Optional
 
+from dlt.common import pendulum
+
 from dlt.common.schema.typing import TColumnSchema
 from dlt.sources.helpers import requests
 
@@ -198,6 +200,67 @@ def fetch_data(
 
         # Follow pagination links if they exist
         _data = pagination(_data, headers)
+
+
+def fetch_data_incremental(
+    object_type: str,
+    api_key: str,
+    props: str,
+    cursor_field: str,
+    modified_after: Any,
+    limit: int = 100,
+) -> Iterator[List[Dict[str, Any]]]:
+    """Fetch CRM data with HubSpot Search API filtered by last-modified timestamp.
+
+    This performs server-side filtering so only changed/new rows are requested.
+    """
+    endpoint = f"/crm/v3/objects/{OBJECT_TYPE_PLURAL[object_type]}/search"
+    url = get_url(endpoint)
+    headers = _get_headers(api_key)
+    headers["content-type"] = "application/json"
+
+    if isinstance(modified_after, str):
+        modified_dt = pendulum.parse(modified_after)
+    else:
+        modified_dt = pendulum.instance(modified_after)
+    modified_after_ms = str(int(modified_dt.int_timestamp * 1000))
+
+    payload: Dict[str, Any] = {
+        "limit": limit,
+        "properties": props.split(",") if props else [],
+        "sorts": [{"propertyName": cursor_field, "direction": "ASCENDING"}],
+        "filterGroups": [
+            {
+                "filters": [
+                    {
+                        "propertyName": cursor_field,
+                        "operator": "GTE",
+                        "value": modified_after_ms,
+                    }
+                ]
+            }
+        ],
+    }
+
+    while True:
+        response = requests.post(url, headers=headers, json=payload)
+        _data = response.json()
+        if "results" in _data:
+            _objects: List[Dict[str, Any]] = []
+            for _result in _data["results"]:
+                _obj = _result.get("properties", _result)
+                if "id" not in _obj and "id" in _result:
+                    _obj["id"] = _result["id"]
+                if "archived" in _result:
+                    _obj["is_deleted"] = _result["archived"]
+                _objects.append(_obj)
+            if _objects:
+                yield _objects
+
+        next_after = _data.get("paging", {}).get("next", {}).get("after")
+        if not next_after:
+            break
+        payload["after"] = next_after
 
 
 def _get_property_names_types(
